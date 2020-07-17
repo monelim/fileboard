@@ -40,6 +40,59 @@ public class FileBoardDAO {
 		return conn;
 	}
 	
+	public void updateFileBoard(FileBoardDTO fdto) {
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement("update fileboard " + "set title = ?, content = ? ,filename= ? " + "where idx = ? ");
+			
+			pstmt.setString(1, fdto.getTitle());
+			pstmt.setString(2, fdto.getContent());
+			pstmt.setString(3, fdto.getFilename());
+			pstmt.setInt(4, fdto.getIdx());
+			
+			pstmt.executeUpdate();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			doClose(null, pstmt, conn);
+		}
+	}
+	
+	// ex) cks[0] = 20, cks[1] = 21
+	// cks.length는 2, i는 1
+	public void deleteFileBoard(String[] cks) {
+		
+		String deleteIdxs = "";
+		for(int i = 0; i < cks.length; i++) {
+			if( i == cks.length - 1)
+				deleteIdxs = deleteIdxs + " " + cks[i];
+			else
+				deleteIdxs = deleteIdxs + " " + cks[i] + ",";
+		}
+		System.out.println(deleteIdxs);
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement("delete from fileboard " + " where idx in(" + deleteIdxs + ");");			
+			
+			pstmt.executeUpdate();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			doClose(null, pstmt, conn); //resultset이 없기때문에 null
+		}
+	}
+	
 	public List<FileBoardDTO> selectAllFileBoard() { //selectAllFileBoard 호출해서 db의 자료를 select 하여 resultset에 담고 array list로 가져온다.
 		
 		List<FileBoardDTO> list = new ArrayList<FileBoardDTO>();
@@ -50,7 +103,7 @@ public class FileBoardDAO {
 		
 		try {
 			conn = getConnection();
-			pstmt = conn.prepareStatement("select * from fileboard");
+			pstmt = conn.prepareStatement("select * from fileboard order by idx desc");
 			rs = pstmt.executeQuery(); // resultset=rs는 하나의 테이블
 			
 			while (rs.next()) {

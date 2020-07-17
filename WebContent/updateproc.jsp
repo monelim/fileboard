@@ -54,19 +54,16 @@
 		out.println("클라이언트 이름 : " + clientfilename + "<br/>");
 		out.println("파일 크기: " + cfile.length() + "<br/>");
 		
+		fdto.setIdx( Integer.parseInt( mr.getParameter("idx")) );
 		fdto.setFilename(serverfilename);
 		fdto.setTitle(mr.getParameter("title"));
 		fdto.setContent(mr.getParameter("content"));
 	}
 	
 	FileBoardDAO fbd = FileBoardDAO.getInstance();
-	fbd.insertFileBoard(fdto);
+	fbd.updateFileBoard(fdto);
 	
 	response.sendRedirect("index.jsp"); //다 진행하고 나면 index.jsp로 이동해라.
-
-
-
-
 
 
 
